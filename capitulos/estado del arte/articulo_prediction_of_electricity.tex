@@ -1,0 +1,28 @@
+En el articulo \textit{Prediction of Electricity Demand in Weakly Interconnected Power System Using an Ensemble Time Series model qith a Bayesian Optimization Approach}, pronostica la demanda electrica de corto plazo en el Sistema Electrico NAcional de Mexico, centrada en la region Peninsular, que esta integrada por Yucatan, Campeche y Quintana Roo.
+
+En el articulo hace unso de modelos como; Sarima, Facebook Prophet.
+Se enfoca en el estudio de 5 nodos electricos:
+\begin{itemize}
+    \item Nodo 41
+    \item Nodo 42
+    \item Nodo 43
+    \item Nodo 44
+    \item Nodo 45
+\end{itemize}
+Sarima presenta ventajas ya que la demanda tiene una estructura repetida, con estacionalidad clara.
+
+Entre las limitaciones de esta investigacion utiliza solamente un periodo de 24 horas ademas de que su metrica principal fue el MAE.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c}
+    Nodo& Prophet & Sarima  & Ensamble BO \\
+    41 & 17.52 & 15.72   & 9.60 \\
+    42 & 51.86 & 15.99 & 28.18 \\
+    43& 36.46 & 11.93 & 16.54 \\
+    44& 9.19 & 12.44 & 4.45 \\
+    45& 2.78 & 1.18 & 1.21 \\
+    \end{tabular}
+    \caption{Tabla comparativa MAE de los diferentes metodos del articulo }
+    \label{tab:tablart1}
+    {\raggedright \small \textit{Nota:} Datos tomados de \cite{PANALESPEREZ2025652}.\par}
+\end{table}

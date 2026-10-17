@@ -1,0 +1,75 @@
+En el articulo \textit{A Highly Accurate and Efficient Statistical Framework for Short-Term Load Forecasting: A Case Study for Mexico}
+propone un marco estadístico para el pronóstico de carga eléctrica de corto plazo aplicado al Sistema Interconectado Nacional de México.En el enfoque realizan un postprocesamiento estadístico del pronóstico GUCR utilizado por CENACE.
+
+Una característica importante del método es que introduce factores dinámicos de corrección que se calculan en función de la hora. Para el ajuste con horizonte de hasta ocho días, el artículo define el factor.
+
+\begin{equation}
+F_h =
+\frac{1}{4}
+\sum_{d=1}^{4}
+\frac{P_{\max,d,h}-E_{d,h}}
+{E_{d,h}},
+\end{equation}
+
+donde $P_{\max,d,h}$ representa la potencia máxima instantánea
+registrada durante la hora $h$ del día $d$, mientras que $E_{d,h}$
+corresponde a la energía durante la misma hora.
+
+Entre las principales ventajas de esta propuesta se encuentran su
+baja complejidad computacional, el aprovechamiento de la
+infraestructura y de los datos previamente disponibles en CENACE,
+y su orientación hacia aplicaciones operacionales, debido a que
+permite obtener estimaciones de potencia máxima instantánea. Además,
+el método fue probado tanto en condiciones normales como durante
+eventos atípicos, incluyendo apagones, frentes fríos, inundaciones
+y modificaciones de demanda relacionadas con días festivos.
+
+La metodología mostró reducciones importantes en las métricas MAPE,
+MAE y RMSE con respecto al pronóstico. Por ejemplo, durante
+las inundaciones registradas en la zona de carga de Poza Rica,
+el MAPE disminuyó de $34.00\%$ a $2.19\%$, mientras que durante
+las festividades de Día de Muertos en Puebla disminuyó de $7.80\%$
+a $0.90\%$.
+
+Las metricas que emplearon en el artulo fueron:
+
+\begin{equation}
+MAPE =
+\frac{100}{N}
+\sum_{i=1}^{N}
+\left|
+\frac{x_i-\hat{x}_i}{x_i}
+\right|,
+\end{equation}
+
+\begin{equation}
+MAE =
+\frac{1}{N}
+\sum_{i=1}^{N}
+|x_i-\hat{x}_i|,
+\end{equation}
+
+y
+
+\begin{equation}
+RMSE =
+\sqrt{
+\frac{1}{N}
+\sum_{i=1}^{N}
+(x_i-\hat{x}_i)^2
+}.
+\end{equation}
+El procedimiento depende de la existencia de un
+pronóstico GUCR previo y de datos operacionales obtenidos,<<< constituye principalmente un método de
+postprocesamiento y no un modelo predictivo completamente
+independiente. Asimismo, el cálculo de los factores dinámicos se
+realiza empleando cuatro días similares y las tres horas anteriores,
+lo que puede limitar su representatividad ante cambios estructurales
+prolongados en el comportamiento de la demanda.
+
+Entre las limitaciones reconocidas por los autores se encuentra que
+la implementación a nivel de zona de carga todavía no comprende todas las zonas y  la metodología aún no ha sido aplicada al
+sistema eléctrico de Baja California. Además, actualmente está
+orientada al pronóstico de máximos instantáneos horarios, quedando
+como trabajo futuro su adaptación para estimar mínimos de demanda.
+\cite{CondeLopez2026}

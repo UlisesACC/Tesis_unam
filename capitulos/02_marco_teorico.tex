@@ -1,0 +1,19 @@
+\chapter{Marco teórico}
+
+\section{Conceptos fundamentales de series de tiempo}
+
+Una serie de tiempo es una secuencia de observaciones ordenadas temporalmente. Su modelado puede considerar tendencia, estacionalidad, ciclos, ruido y dependencias entre observaciones. En esta sección se desarrollarán los conceptos y la notación empleados en los experimentos.
+\input{capitulos/marco teorico/series_tiempo_marco_teorico}
+\section{Modelos ocupados}
+\input{capitulos/marco teorico/modelos}
+\section{Redes neuronales para predicción}
+
+Las redes neuronales permiten aproximar relaciones no lineales a partir de datos. Para una introducción general al aprendizaje profundo puede consultarse \textcite{goodfellow2016deep}.
+
+\section{Arquitecturas LSTM}
+
+Las redes LSTM incorporan compuertas que regulan el flujo de información y fueron propuestas para reducir dificultades asociadas con dependencias de largo plazo \cite{hochreiter1997lstm}.
+
+\section{Transformadores}
+
+Los transformadores emplean mecanismos de atención para relacionar posiciones de una secuencia sin recurrencia explícita \cite{vaswani2017attention}. Su adaptación a series de tiempo requiere definir la representación de entrada, la codificación temporal y la cabeza de regresión.

@@ -1,0 +1,77 @@
+De acuerdo con Brockwell y Davis, una serie de tiempo es un conjunto de observaciones $x_t$, donde cada observación se registra en un momento específico $t$. A diferencia de otros conjuntos de datos, en una serie temporal el orden de las observaciones es fundamental, debido a que los valores registrados pueden presentar dependencia respecto de observaciones anteriores \cite{brockwell2016introduction}.
+
+Una serie de tiempo puede representarse mediante
+
+\begin{equation}
+    \{x_t:t\in T_0\},
+\end{equation}
+
+donde $x_t$ representa el valor observado en el tiempo $t$ y $T_0$ es el conjunto de instantes en los que se realizaron las observaciones. Por ejemplo, si se dispone de la demanda eléctrica registrada cada hora, entonces $x_t$ corresponde a la demanda observada durante la hora $t$.
+
+Series de tiempo discretas y continuas
+
+Las series de tiempo pueden clasificarse como discretas o continuas. Una serie de tiempo discreta se obtiene cuando las observaciones se registran en momentos separados, generalmente a intervalos regulares, como cada hora, día, mes o año. Puede representarse como
+
+\begin{equation}
+    \{x_1,x_2,\ldots,x_n\}.
+\end{equation}
+
+Por otro lado, una serie de tiempo continua se obtiene cuando una variable se observa de manera continua durante un intervalo determinado. En este caso, el conjunto de tiempos puede representarse mediante un intervalo como
+
+\begin{equation}
+    T_0=[a,b].
+\end{equation}
+
+En el pronóstico de demanda eléctrica normalmente se trabaja con series de tiempo discretas, debido a que los registros se almacenan en intervalos horarios, diarios o mensuales.
+
+Interpretación probabilística
+
+Desde una perspectiva probabilística, los valores observados pueden considerarse realizaciones de una secuencia de variables aleatorias:
+
+\begin{equation}
+    \{X_t:t\in T_0\}.
+\end{equation}
+
+Por lo tanto, es necesario distinguir entre el proceso aleatorio $\{X_t\}$ y los datos observados $\{x_t\}$. El proceso aleatorio representa todos los posibles comportamientos de la variable a través del tiempo, mientras que los datos constituyen una realización particular de dicho proceso.
+
+Un modelo de series de tiempo para los datos observados $\{x_t\}$ especifica las propiedades probabilísticas de una secuencia de variables aleatorias $\{X_t\}$, de la cual se supone que los datos constituyen una realización. Estas propiedades pueden incluir las medias, varianzas, covarianzas o distribuciones conjuntas de las variables aleatorias \cite{brockwell2016introduction}.
+
+Componentes de una serie de tiempo
+
+El análisis de series de tiempo busca identificar y representar los patrones presentes en los datos. Entre sus componentes principales se encuentran la tendencia, la estacionalidad y el componente aleatorio.
+
+Una representación aditiva general de una serie de tiempo es
+
+\begin{equation}
+    X_t=T_t+S_t+Z_t,
+\end{equation}
+
+donde:
+
+\begin{itemize}
+    \item $T_t$ representa la tendencia;
+    \item $S_t$ representa el componente estacional;
+    \item $Z_t$ representa el componente aleatorio o residual.
+\end{itemize}
+
+La tendencia representa el comportamiento general de la serie durante un periodo prolongado. Esta puede mostrar un crecimiento, una disminución o un comportamiento aproximadamente constante.
+
+La estacionalidad corresponde a patrones que se repiten en intervalos regulares. En una serie de demanda eléctrica pueden presentarse ciclos diarios, semanales o anuales. Por ejemplo, la demanda puede aumentar durante determinadas horas del día o durante las temporadas de temperaturas elevadas.
+
+El componente aleatorio contiene las fluctuaciones que no pueden explicarse mediante la tendencia o la estacionalidad. Este componente puede estar relacionado con acontecimientos inesperados, errores de medición u otros factores no incluidos en el modelo.
+
+Objetivos del análisis de series de tiempo
+
+El análisis de series de tiempo tiene como propósito construir modelos que permitan describir y comprender el mecanismo que genera las observaciones. Una vez seleccionado un modelo apropiado, es posible estimar sus parámetros, evaluar su ajuste y utilizarlo para diferentes aplicaciones \cite{brockwell2016introduction}.
+
+Entre las principales aplicaciones de los modelos de series de tiempo se encuentran:
+
+\begin{itemize}
+    \item describir de manera compacta el comportamiento de los datos;
+    \item identificar tendencias y patrones estacionales;
+    \item separar el ruido de una señal;
+    \item analizar las relaciones temporales entre las observaciones;
+    \item simular posibles comportamientos futuros;
+    \item predecir valores futuros de la serie;
+    \item apoyar la toma de decisiones y el control de sistemas.
+\end{itemize}

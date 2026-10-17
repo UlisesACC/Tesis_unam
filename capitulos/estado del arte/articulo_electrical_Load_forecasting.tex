@@ -1,0 +1,84 @@
+En el articulo los autores desarrollaron un modelo probabilístico
+para el pronóstico de demanda eléctrica del sistema de Baja
+California Sur basado en la combinación de redes neuronales
+convolucionales y regresión cuantílica (CNN-QR), complementado
+mediante la Rainbow Technique for Categorical Features (RTCF).
+
+La regresión cuantílica permite estimar diferentes regiones de la
+distribución condicional de la demanda mediante
+
+\begin{equation}
+Q_{Y|X}(\tau|X)
+=
+X^{T}\beta_{\tau},
+\end{equation}
+
+donde $\tau \in (0,1)$ representa el cuantil considerado.
+
+El entrenamiento puede expresarse mediante la función de pérdida
+cuantílica
+
+\begin{equation}
+\rho_{\tau}(u)
+=
+u
+\left[
+\tau-\mathbb{I}(u<0)
+\right],
+\end{equation}
+
+donde
+
+\begin{equation}
+u=y-\hat{y}.
+\end{equation}
+
+De manera equivalente,
+
+\begin{equation}
+L_{\tau}(y,\hat{y})
+=
+\begin{cases}
+\tau(y-\hat{y}), & y\geq\hat{y},\\
+(1-\tau)(\hat{y}-y), & y<\hat{y}.
+\end{cases}
+\end{equation}
+
+
+La arquitectura propuesta incorpora una capa convolucional
+unidimensional con 128 filtros y un kernel de tamaño 3, seguida de
+MaxPooling, capas densas, regularización $L_2$ y Dropout. Además,
+RTCF combina diferentes variables categóricas y temporales para
+construir una nueva característica denominada \textit{Category}.
+
+Entre las principales ventajas del método se encuentra su capacidad
+para producir pronósticos probabilísticos y representar relaciones
+no lineales dentro de los datos. Asimismo, la integración de RTCF
+permite incorporar de manera conjunta información relacionada con
+el día, mes, estación, días festivos y hora del día.
+
+Los resultados muestran que CNN-QR obtiene menores pérdidas
+cuantílicas que la regresión cuantílica convencional. Por ejemplo,
+para los cuantiles $0.1$, $0.5$ y $0.9$, CNN-QR obtuvo pérdidas de
+$8.84$, $11.08$ y $8.70$, respectivamente, mientras que la regresión
+cuantílica obtuvo valores de $39.00$, $21.50$ y $34.34$.
+
+No obstante, el método presenta una mayor complejidad computacional
+que los modelos estadísticos tradicionales debido al entrenamiento
+de una red neuronal profunda. También presenta una menor
+interpretabilidad debido a las transformaciones internas realizadas
+por las capas convolucionales y densas.
+
+Por otra parte, RTCF produce una cantidad considerable de
+combinaciones categóricas, algunas de las cuales aparecen con muy
+poca frecuencia en el conjunto de entrenamiento. Esto puede
+dificultar la generalización del modelo hacia combinaciones que no
+estén suficientemente representadas.
+
+La principal limitación del estudio es su alcance geográfico, dado
+que el modelo fue desarrollado y evaluado exclusivamente con
+información correspondiente a Baja California Sur. El conjunto de
+datos comprende aproximadamente 15\,336 observaciones horarias
+registradas principalmente entre 2019 y 2020, por lo que no se
+demuestra su capacidad de generalización a otras regiones del
+Sistema Eléctrico Nacional.

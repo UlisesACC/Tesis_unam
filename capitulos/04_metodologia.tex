@@ -1,0 +1,27 @@
+\chapter{Metodología}
+
+\section{Revisión bibliográfica}
+\section{Descripcion de los datos}
+Se realizará una revisión de literatura sobre series de tiempo, redes LSTM, transformadores y regresión neuronal.
+
+\section{Selección y preprocesamiento de datos}
+
+El preprocesamiento contemplará normalización, detección o eliminación justificada de valores atípicos y transformaciones apropiadas para cada conjunto de datos. La partición respetará el orden temporal para evitar fuga de información.
+
+\section{Arquitecturas implementadas}
+
+Se implementarán modelos LSTM y transformadores con mecanismos de atención para regresión. Se compararán configuraciones univariantes y multivariantes, así como predicciones de salida simple y múltiple.
+
+\section{Configuración de los experimentos}
+
+Los experimentos variarán hiperparámetros relevantes y mantendrán condiciones comparables entre arquitecturas. El entrenamiento y la evaluación se documentarán para favorecer la reproducibilidad.
+
+\section{Métricas de evaluación}
+
+El desempeño se medirá mediante RMSE, MAE, MAPE y coeficiente de determinación $R^2$.
+
+\begin{align}
+\mathrm{RMSE} &= \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2},\\
+\mathrm{MAE} &= \frac{1}{n}\sum_{i=1}^{n}\lvert y_i-\hat{y}_i\rvert,\\
+\mathrm{MAPE} &= \frac{100}{n}\sum_{i=1}^{n}\left\lvert\frac{y_i-\hat{y}_i}{y_i}\right\rvert.
+\end{align}

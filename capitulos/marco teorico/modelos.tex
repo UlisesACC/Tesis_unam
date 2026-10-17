@@ -1,0 +1,760 @@
+\subsection{Modelos de regresión}
+\label{sec:modelos_regresion}
+
+Los modelos de regresión tienen como propósito representar la relación entre una variable dependiente y un conjunto de variables explicativas. En el contexto del pronóstico de demanda eléctrica, la variable dependiente puede corresponder a la demanda futura, mientras que las variables explicativas pueden incluir observaciones históricas, variables meteorológicas y características temporales.
+
+Sea un conjunto de datos formado por $n$ observaciones:
+
+\begin{equation}
+    \mathcal{D}
+    =
+    \left\{
+        \left(\mathbf{x}_i,y_i\right)
+    \right\}_{i=1}^{n},
+\end{equation}
+
+donde $\mathbf{x}_i\in\mathbb{R}^{p}$ es el vector de $p$ variables explicativas y $y_i\in\mathbb{R}$ es el valor que se desea predecir. Un modelo de regresión busca obtener una función $f$ que produzca una aproximación de la variable dependiente:
+
+\begin{equation}
+    \hat{y}_i=f(\mathbf{x}_i),
+\end{equation}
+
+donde $\hat{y}_i$ representa la predicción del modelo.
+
+Para aplicar estos modelos al pronóstico de series de tiempo, las observaciones anteriores pueden organizarse como variables de entrada. Si se utiliza una ventana de longitud $p$, el vector de entrada correspondiente al instante $t$ puede definirse como
+
+\begin{equation}
+    \mathbf{x}_t=
+    \begin{bmatrix}
+        y_{t-1} &
+        y_{t-2} &
+        \cdots &
+        y_{t-p}
+    \end{bmatrix}^{T},
+\end{equation}
+
+y el objetivo consiste en predecir el valor siguiente:
+
+\begin{equation}
+    \hat{y}_t=f(\mathbf{x}_t).
+\end{equation}
+
+También pueden incorporarse variables exógenas, como temperatura, humedad, hora del día, día de la semana, mes y días festivos. En ese caso, el vector $\mathbf{x}_t$ contiene tanto los rezagos de la demanda como las variables externas disponibles.
+
+\subsubsection{Regresión lineal mediante mínimos cuadrados ordinarios}
+\label{sec:ols}
+
+El método de mínimos cuadrados ordinarios, conocido como Ordinary Least Squares u OLS, es uno de los procedimientos fundamentales para estimar modelos de regresión lineal. Este modelo supone que la variable dependiente puede expresarse como una combinación lineal de las variables explicativas:
+
+\begin{equation}
+    y_i
+    =
+    \beta_0
+    +
+    \sum_{j=1}^{p}\beta_j x_{ij}
+    +
+    \varepsilon_i,
+\end{equation}
+
+donde $\beta_0$ es el intercepto, $\beta_j$ son los coeficientes asociados con las variables explicativas y $\varepsilon_i$ representa el término de error.
+
+En notación matricial, el modelo puede escribirse como
+
+\begin{equation}
+    \mathbf{y}
+    =
+    \mathbf{X}\boldsymbol{\beta}
+    +
+    \boldsymbol{\varepsilon},
+\end{equation}
+
+donde $\mathbf{X}$ es la matriz de diseño, $\mathbf{y}$ contiene los valores observados y $\boldsymbol{\beta}$ es el vector de parámetros.
+
+La estimación mediante OLS consiste en encontrar los coeficientes que minimizan la suma de los errores al cuadrado:
+
+\begin{equation}
+    \hat{\boldsymbol{\beta}}_{\mathrm{OLS}}
+    =
+    \arg\min_{\boldsymbol{\beta}}
+    \sum_{i=1}^{n}
+    \left(
+        y_i-\hat{y}_i
+    \right)^2.
+\end{equation}
+
+De manera equivalente:
+
+\begin{equation}
+    \hat{\boldsymbol{\beta}}_{\mathrm{OLS}}
+    =
+    \arg\min_{\boldsymbol{\beta}}
+    \left\|
+        \mathbf{y}-\mathbf{X}\boldsymbol{\beta}
+    \right\|_2^2.
+\end{equation}
+
+Cuando $\mathbf{X}^{T}\mathbf{X}$ es invertible, la solución analítica está dada por
+
+\begin{equation}
+    \hat{\boldsymbol{\beta}}_{\mathrm{OLS}}
+    =
+    \left(
+        \mathbf{X}^{T}\mathbf{X}
+    \right)^{-1}
+    \mathbf{X}^{T}\mathbf{y}.
+\end{equation}
+
+OLS tiene como ventajas su sencillez, rapidez e interpretabilidad. Cada coeficiente indica el cambio esperado en la variable dependiente ante un incremento unitario de la variable correspondiente, manteniendo constantes las demás.
+
+No obstante, el modelo puede presentar inestabilidad cuando existe multicolinealidad. Este problema es común en series de tiempo, debido a que los rezagos consecutivos de la demanda suelen estar fuertemente correlacionados. OLS también puede presentar sobreajuste cuando se utiliza una cantidad elevada de variables y no representa adecuadamente relaciones no lineales.
+
+En esta investigación, OLS puede emplearse como modelo de referencia para determinar si los métodos regularizados y las arquitecturas neuronales producen mejoras respecto de una regresión lineal convencional.
+
+\subsubsection{Regresión Ridge}
+\label{sec:ridge}
+
+La regresión Ridge es una extensión de OLS que incorpora una penalización sobre el tamaño de los coeficientes. Fue propuesta para tratar problemas de multicolinealidad y mejorar la estabilidad de la estimación \cite{hoerl1970ridge}.
+
+Su función objetivo es
+
+\begin{equation}
+    \hat{\boldsymbol{\beta}}_{\mathrm{Ridge}}
+    =
+    \arg\min_{\boldsymbol{\beta}}
+    \left\{
+        \sum_{i=1}^{n}
+        \left(
+            y_i-\hat{y}_i
+        \right)^2
+        +
+        \lambda
+        \sum_{j=1}^{p}\beta_j^2
+    \right\},
+\end{equation}
+
+o, en notación matricial,
+
+\begin{equation}
+    \hat{\boldsymbol{\beta}}_{\mathrm{Ridge}}
+    =
+    \arg\min_{\boldsymbol{\beta}}
+    \left\{
+        \left\|
+            \mathbf{y}-\mathbf{X}\boldsymbol{\beta}
+        \right\|_2^2
+        +
+        \lambda
+        \left\|
+            \boldsymbol{\beta}
+        \right\|_2^2
+    \right\}.
+\end{equation}
+
+El término
+
+\begin{equation}
+    \lambda\sum_{j=1}^{p}\beta_j^2
+\end{equation}
+
+corresponde a la regularización $L_2$. El hiperparámetro $\lambda\geq 0$ controla la intensidad de la penalización. Cuando $\lambda=0$, la regresión Ridge es equivalente a OLS. Cuando $\lambda$ aumenta, los coeficientes se aproximan a cero, aunque generalmente no se vuelven exactamente iguales a cero.
+
+La solución puede expresarse como
+
+\begin{equation}
+    \hat{\boldsymbol{\beta}}_{\mathrm{Ridge}}
+    =
+    \left(
+        \mathbf{X}^{T}\mathbf{X}
+        +
+        \lambda\mathbf{I}
+    \right)^{-1}
+    \mathbf{X}^{T}\mathbf{y},
+\end{equation}
+
+donde $\mathbf{I}$ es la matriz identidad.
+
+La principal ventaja de Ridge es su capacidad para estabilizar los coeficientes cuando las variables están correlacionadas. Esto es útil para el pronóstico de demanda eléctrica, debido a que los valores registrados en horas cercanas presentan una dependencia temporal elevada.
+
+Como desventaja, Ridge conserva todas las variables dentro del modelo. Por lo tanto, no realiza una selección automática de características. Además, la interpretación de los coeficientes requiere que las variables sean previamente estandarizadas, ya que la penalización depende de la escala de cada característica.
+
+\subsubsection{Regresión Lasso}
+\label{sec:lasso}
+
+La regresión Lasso, cuyo nombre proviene de Least Absolute Shrinkage and Selection Operator, agrega una penalización basada en el valor absoluto de los coeficientes \cite{tibshirani1996lasso}. Su función objetivo se define como
+
+\begin{equation}
+    \hat{\boldsymbol{\beta}}_{\mathrm{Lasso}}
+    =
+    \arg\min_{\boldsymbol{\beta}}
+    \left\{
+        \sum_{i=1}^{n}
+        \left(
+            y_i-\hat{y}_i
+        \right)^2
+        +
+        \lambda
+        \sum_{j=1}^{p}
+        \left|
+            \beta_j
+        \right|
+    \right\}.
+\end{equation}
+
+En notación vectorial:
+
+\begin{equation}
+    \hat{\boldsymbol{\beta}}_{\mathrm{Lasso}}
+    =
+    \arg\min_{\boldsymbol{\beta}}
+    \left\{
+        \left\|
+            \mathbf{y}-\mathbf{X}\boldsymbol{\beta}
+        \right\|_2^2
+        +
+        \lambda
+        \left\|
+            \boldsymbol{\beta}
+        \right\|_1
+    \right\}.
+\end{equation}
+
+La penalización
+
+\begin{equation}
+    \lambda
+    \sum_{j=1}^{p}
+    \left|
+        \beta_j
+    \right|
+\end{equation}
+
+se conoce como regularización $L_1$. A diferencia de Ridge, Lasso puede hacer que algunos coeficientes sean exactamente iguales a cero. Por consiguiente, el modelo realiza simultáneamente regularización y selección de variables.
+
+Esta propiedad permite identificar cuáles rezagos o variables externas aportan mayor información al pronóstico. Por ejemplo, Lasso puede determinar si la demanda de la hora anterior, la demanda del día anterior o la temperatura son relevantes para estimar el valor futuro.
+
+Entre sus ventajas se encuentran la generación de modelos dispersos, la reducción de variables irrelevantes y una mayor facilidad de interpretación. Sin embargo, cuando existen grupos de variables fuertemente correlacionadas, Lasso puede seleccionar una de ellas y eliminar las restantes de forma inestable. Además, al igual que Ridge, requiere estandarizar las variables antes del entrenamiento.
+
+\subsubsection{Elastic Net}
+\label{sec:elastic_net}
+
+Elastic Net combina las penalizaciones $L_1$ de Lasso y $L_2$ de Ridge \cite{zou2005elastic}. Su función objetivo puede expresarse como
+
+\begin{equation}
+\begin{split}
+    \hat{\boldsymbol{\beta}}_{\mathrm{EN}}
+    =
+    \arg\min_{\boldsymbol{\beta}}
+    \Bigg\{
+        &
+        \sum_{i=1}^{n}
+        \left(
+            y_i-\hat{y}_i
+        \right)^2
+        \\
+        &+
+        \lambda
+        \left[
+            \alpha
+            \sum_{j=1}^{p}
+            \left|
+                \beta_j
+            \right|
+            +
+            \frac{1-\alpha}{2}
+            \sum_{j=1}^{p}
+            \beta_j^2
+        \right]
+    \Bigg\}.
+\end{split}
+\end{equation}
+
+El hiperparámetro $\lambda$ controla la intensidad total de la regularización, mientras que $\alpha$ determina la proporción correspondiente a cada penalización:
+
+\begin{equation}
+    0\leq\alpha\leq 1.
+\end{equation}
+
+Cuando $\alpha=1$, Elastic Net se comporta como Lasso. Cuando $\alpha=0$, se comporta como Ridge. Para valores intermedios combina la selección de variables de Lasso con la estabilidad de Ridge.
+
+Elastic Net es particularmente útil cuando existen grupos de variables correlacionadas. En un problema de demanda eléctrica, los rezagos $y_{t-1}$, $y_{t-2}$ y $y_{t-3}$ pueden contener información semejante. Mientras Lasso puede conservar solamente uno de ellos, Elastic Net puede mantener el grupo completo, pero reduciendo la magnitud de sus coeficientes.
+
+Su principal ventaja es el equilibrio entre selección y estabilidad. Como desventaja, requiere optimizar dos hiperparámetros, $\lambda$ y $\alpha$, lo que incrementa el costo de la búsqueda y validación del modelo.
+
+\subsubsection{Máquinas de soporte vectorial para regresión}
+\label{sec:svr}
+
+Las máquinas de soporte vectorial fueron desarrolladas inicialmente para problemas de clasificación \cite{cortes1995support}. Su extensión para variables continuas se conoce como Support Vector Regression o SVR \cite{drucker1997svr}.
+
+En SVR se busca una función que presente como máximo una desviación $\varepsilon$ respecto de los valores reales y que, al mismo tiempo, sea lo más simple posible. En el caso lineal, la función de predicción es
+
+\begin{equation}
+    f(\mathbf{x})
+    =
+    \mathbf{w}^{T}\mathbf{x}+b,
+\end{equation}
+
+donde $\mathbf{w}$ es el vector de pesos y $b$ representa el sesgo.
+
+La pérdida $\varepsilon$-insensible se define como
+
+\begin{equation}
+    L_{\varepsilon}(y,f(\mathbf{x}))
+    =
+    \max
+    \left\{
+        0,
+        \left|
+            y-f(\mathbf{x})
+        \right|
+        -
+        \varepsilon
+    \right\}.
+\end{equation}
+
+Los errores menores que $\varepsilon$ no reciben penalización. Esto genera una región alrededor de la función de regresión conocida como tubo $\varepsilon$-insensible.
+
+El problema de optimización puede expresarse como
+
+\begin{equation}
+\begin{split}
+    \min_{\mathbf{w},b,\boldsymbol{\xi},\boldsymbol{\xi}^{*}}
+    \quad&
+    \frac{1}{2}
+    \left\|
+        \mathbf{w}
+    \right\|_2^2
+    +
+    C
+    \sum_{i=1}^{n}
+    \left(
+        \xi_i+\xi_i^{*}
+    \right),
+\end{split}
+\end{equation}
+
+sujeto a
+
+\begin{equation}
+    y_i-\mathbf{w}^{T}\mathbf{x}_i-b
+    \leq
+    \varepsilon+\xi_i,
+\end{equation}
+
+\begin{equation}
+    \mathbf{w}^{T}\mathbf{x}_i+b-y_i
+    \leq
+    \varepsilon+\xi_i^{*},
+\end{equation}
+
+\begin{equation}
+    \xi_i,\xi_i^{*}\geq 0.
+\end{equation}
+
+El parámetro $C$ controla la penalización de los errores situados fuera del tubo. Un valor elevado de $C$ busca reducir los errores de entrenamiento, pero puede generar sobreajuste. Un valor pequeño permite una mayor cantidad de errores y produce un modelo más regularizado.
+
+SVR puede representar relaciones no lineales mediante funciones kernel. La función de predicción se expresa como
+
+\begin{equation}
+    f(\mathbf{x})
+    =
+    \sum_{i=1}^{n}
+    \left(
+        \alpha_i-\alpha_i^{*}
+    \right)
+    K(\mathbf{x}_i,\mathbf{x})
+    +
+    b.
+\end{equation}
+
+Uno de los kernels más utilizados es el Radial Basis Function:
+
+\begin{equation}
+    K(\mathbf{x}_i,\mathbf{x}_j)
+    =
+    \exp
+    \left(
+        -\gamma
+        \left\|
+            \mathbf{x}_i-\mathbf{x}_j
+        \right\|_2^2
+    \right),
+\end{equation}
+
+donde $\gamma$ controla el alcance de la influencia de cada observación.
+
+SVR puede obtener buenos resultados con conjuntos de datos pequeños o medianos y representar relaciones no lineales sin definir explícitamente una transformación. No obstante, su entrenamiento puede ser costoso cuando el número de observaciones es elevado y su desempeño depende considerablemente de la selección de $C$, $\varepsilon$, $\gamma$ y el kernel. También requiere estandarizar las variables.
+
+\subsubsection{Perceptrón y perceptrón multicapa para regresión}
+\label{sec:perceptron}
+
+El perceptrón clásico es un modelo diseñado para clasificación binaria \cite{rosenblatt1958perceptron}. Su salida se obtiene mediante
+
+\begin{equation}
+    \hat{y}
+    =
+    \phi
+    \left(
+        \mathbf{w}^{T}\mathbf{x}+b
+    \right),
+\end{equation}
+
+donde $\phi$ es una función escalón. Debido a que produce una salida discreta, el perceptrón clásico no es directamente un modelo de regresión.
+
+Para resolver problemas de regresión se utiliza una red neuronal de alimentación hacia adelante, conocida como perceptrón multicapa o Multilayer Perceptron. Esta arquitectura contiene una capa de entrada, una o varias capas ocultas y una capa de salida.
+
+Para una capa oculta, la transformación puede escribirse como
+
+\begin{equation}
+    \mathbf{h}
+    =
+    \phi
+    \left(
+        \mathbf{W}^{(1)}\mathbf{x}
+        +
+        \mathbf{b}^{(1)}
+    \right),
+\end{equation}
+
+mientras que la salida del modelo es
+
+\begin{equation}
+    \hat{y}
+    =
+    \mathbf{W}^{(2)}\mathbf{h}
+    +
+    b^{(2)}.
+\end{equation}
+
+Para regresión, la última capa normalmente emplea una activación lineal, debido a que la salida debe ser un valor continuo. En las capas ocultas pueden utilizarse funciones de activación como ReLU:
+
+\begin{equation}
+    \operatorname{ReLU}(z)
+    =
+    \max(0,z).
+\end{equation}
+
+Los parámetros del modelo se estiman minimizando una función de pérdida. Una opción común es el error cuadrático medio:
+
+\begin{equation}
+    \operatorname{MSE}
+    =
+    \frac{1}{n}
+    \sum_{i=1}^{n}
+    \left(
+        y_i-\hat{y}_i
+    \right)^2.
+\end{equation}
+
+El ajuste se realiza mediante retropropagación y un algoritmo de optimización basado en gradiente:
+
+\begin{equation}
+    \boldsymbol{\theta}^{(k+1)}
+    =
+    \boldsymbol{\theta}^{(k)}
+    -
+    \eta
+    \nabla_{\boldsymbol{\theta}}
+    L(\boldsymbol{\theta}^{(k)}),
+\end{equation}
+
+donde $\eta$ representa la tasa de aprendizaje.
+
+El perceptrón multicapa puede aproximar relaciones no lineales complejas y combinar una cantidad elevada de variables. Sin embargo, requiere seleccionar el número de capas, neuronas, funciones de activación, tasa de aprendizaje y mecanismos de regularización. También puede presentar sobreajuste y sus parámetros son menos interpretables que los coeficientes de una regresión lineal.
+
+En un problema de demanda eléctrica, una MLP recibe una ventana de observaciones pasadas y produce la estimación de la demanda futura. A diferencia de una red recurrente o un Transformer, la MLP no representa explícitamente el orden temporal; este debe proporcionarse mediante la organización de los rezagos en el vector de entrada.
+
+\subsubsection{Transformer para regresión de series de tiempo}
+\label{sec:transformer}
+
+La arquitectura Transformer fue presentada por Vaswani et al. y se basa principalmente en mecanismos de atención \cite{vaswani2017attention}. A diferencia de las redes recurrentes, procesa simultáneamente los elementos de una secuencia y establece relaciones directas entre diferentes posiciones temporales.
+
+Para aplicar un Transformer al pronóstico de demanda, una secuencia de entrada puede representarse como
+
+\begin{equation}
+    \mathbf{X}
+    =
+    \begin{bmatrix}
+        \mathbf{x}_{t-L+1} \\
+        \mathbf{x}_{t-L+2} \\
+        \vdots \\
+        \mathbf{x}_{t}
+    \end{bmatrix},
+\end{equation}
+
+donde $L$ es la longitud de la ventana temporal y cada vector $\mathbf{x}_t$ puede contener la demanda, variables meteorológicas y características de calendario.
+
+Debido a que el Transformer no incorpora recurrencia, se agrega información sobre la posición de cada observación mediante una codificación posicional. En la formulación original se utilizan funciones seno y coseno:
+
+\begin{equation}
+    PE(pos,2i)
+    =
+    \sin
+    \left(
+        \frac{pos}
+        {10000^{2i/d_{\mathrm{model}}}}
+    \right),
+\end{equation}
+
+\begin{equation}
+    PE(pos,2i+1)
+    =
+    \cos
+    \left(
+        \frac{pos}
+        {10000^{2i/d_{\mathrm{model}}}}
+    \right),
+\end{equation}
+
+donde $pos$ representa la posición temporal, $i$ identifica la dimensión y $d_{\mathrm{model}}$ es la dimensión interna del modelo.
+
+\textbf{Mecanismo de atención}
+
+El componente central del Transformer es la atención de producto punto escalado. A partir de las entradas se calculan tres matrices:
+
+\begin{equation}
+    \mathbf{Q}
+    =
+    \mathbf{X}\mathbf{W}^{Q},
+\end{equation}
+
+\begin{equation}
+    \mathbf{K}
+    =
+    \mathbf{X}\mathbf{W}^{K},
+\end{equation}
+
+\begin{equation}
+    \mathbf{V}
+    =
+    \mathbf{X}\mathbf{W}^{V},
+\end{equation}
+
+donde $\mathbf{Q}$ contiene las consultas, $\mathbf{K}$ las claves y $\mathbf{V}$ los valores.
+
+La atención se calcula mediante
+
+\begin{equation}
+    \operatorname{Attention}
+    \left(
+        \mathbf{Q},
+        \mathbf{K},
+        \mathbf{V}
+    \right)
+    =
+    \operatorname{softmax}
+    \left(
+        \frac{
+            \mathbf{Q}\mathbf{K}^{T}
+        }{
+            \sqrt{d_k}
+        }
+    \right)
+    \mathbf{V},
+\end{equation}
+
+donde $d_k$ es la dimensión de las claves. El producto $\mathbf{Q}\mathbf{K}^{T}$ mide la relación entre las diferentes posiciones de la secuencia. La función softmax transforma estas relaciones en pesos de atención.
+
+La atención de múltiples cabezas se define como
+
+\begin{equation}
+    \operatorname{MultiHead}
+    \left(
+        \mathbf{Q},
+        \mathbf{K},
+        \mathbf{V}
+    \right)
+    =
+    \operatorname{Concat}
+    \left(
+        \operatorname{head}_1,
+        \ldots,
+        \operatorname{head}_H
+    \right)
+    \mathbf{W}^{O},
+\end{equation}
+
+donde cada cabeza puede aprender relaciones temporales diferentes. Por ejemplo, una cabeza puede identificar dependencias entre horas consecutivas, mientras otra puede reconocer semejanzas entre la misma hora de días diferentes.
+
+Después de la atención se emplea una red neuronal completamente conectada:
+
+\begin{equation}
+    \operatorname{FFN}(\mathbf{x})
+    =
+    \max
+    \left(
+        0,
+        \mathbf{x}\mathbf{W}_1+\mathbf{b}_1
+    \right)
+    \mathbf{W}_2
+    +
+    \mathbf{b}_2.
+\end{equation}
+
+La arquitectura también incorpora conexiones residuales y normalización de capas:
+
+\begin{equation}
+    \mathbf{z}
+    =
+    \operatorname{LayerNorm}
+    \left(
+        \mathbf{x}
+        +
+        \operatorname{Sublayer}(\mathbf{x})
+    \right).
+\end{equation}
+
+Para realizar regresión, la representación producida por el Transformer se conecta con una capa de salida lineal:
+
+\begin{equation}
+    \hat{\mathbf{y}}
+    =
+    \mathbf{W}_{o}\mathbf{h}
+    +
+    \mathbf{b}_{o}.
+\end{equation}
+
+Si se realiza una predicción de salida simple, entonces
+
+\begin{equation}
+    \hat{\mathbf{y}}\in\mathbb{R}.
+\end{equation}
+
+Si se pronostican los siguientes $H$ periodos, la salida es
+
+\begin{equation}
+    \hat{\mathbf{y}}
+    =
+    \begin{bmatrix}
+        \hat{y}_{t+1} &
+        \hat{y}_{t+2} &
+        \cdots &
+        \hat{y}_{t+H}
+    \end{bmatrix}^{T}.
+\end{equation}
+
+Entre las principales ventajas del Transformer se encuentra su capacidad para representar dependencias de corto y largo plazo y procesar secuencias en paralelo. También puede integrar múltiples variables y generar directamente pronósticos para varios horizontes.
+
+Como desventajas, requiere una cantidad considerable de datos y recursos computacionales. El costo de la atención convencional crece cuadráticamente con la longitud de la secuencia:
+
+\begin{equation}
+    \mathcal{O}(L^2),
+\end{equation}
+
+donde $L$ representa la longitud de la ventana. Además, una arquitectura demasiado grande puede sobreajustarse cuando el conjunto de datos es limitado.
+
+\subsubsection{Comparación conceptual de los modelos}
+\label{sec:comparacion_modelos}
+
+Los modelos presentados poseen características diferentes. OLS constituye la aproximación lineal sin regularización. Ridge, Lasso y Elastic Net incorporan mecanismos para controlar la complejidad y reducir el sobreajuste. SVR permite representar relaciones no lineales mediante kernels. La MLP aprende relaciones no lineales mediante capas neuronales, mientras que el Transformer incorpora mecanismos de atención para representar directamente las dependencias temporales.
+
+\begin{table}[H]
+    \centering
+    \caption{Características generales de los modelos de regresión.}
+    \label{tab:comparacion_modelos}
+    \begin{tabular}{
+        >{\raggedright\arraybackslash}p{2.4cm}
+        >{\raggedright\arraybackslash}p{3.4cm}
+        >{\raggedright\arraybackslash}p{3.7cm}
+        >{\raggedright\arraybackslash}p{3.7cm}
+    }
+        \toprule
+        \textbf{Modelo} &
+        \textbf{Enfoque} &
+        \textbf{Ventaja principal} &
+        \textbf{Limitación principal} \\
+        \midrule
+
+        OLS &
+        Regresión lineal sin regularización &
+        Sencillo, rápido e interpretable &
+        Sensible a multicolinealidad y sobreajuste \\
+
+        Ridge &
+        Regresión lineal con penalización $L_2$ &
+        Estabilidad ante variables correlacionadas &
+        No realiza selección de variables \\
+
+        Lasso &
+        Regresión lineal con penalización $L_1$ &
+        Selecciona variables automáticamente &
+        Puede ser inestable con variables correlacionadas \\
+
+        Elastic Net &
+        Combinación de penalizaciones $L_1$ y $L_2$ &
+        Equilibra selección y estabilidad &
+        Requiere optimizar dos hiperparámetros \\
+
+        SVR &
+        Margen $\varepsilon$-insensible y kernels &
+        Representa relaciones no lineales con pocos datos &
+        Entrenamiento costoso en conjuntos grandes \\
+
+        MLP &
+        Red neuronal completamente conectada &
+        Aprende relaciones no lineales complejas &
+        No representa explícitamente el orden temporal \\
+
+        Transformer &
+        Atención aplicada a secuencias &
+        Captura dependencias temporales de largo alcance &
+        Requiere más datos y recursos computacionales \\
+
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{Aplicación al pronóstico de demanda eléctrica}
+\label{sec:aplicacion_demanda}
+
+Para comparar estos modelos de manera adecuada, todos deben utilizar las mismas observaciones de entrenamiento, validación y prueba. Debido a que los datos forman una serie de tiempo, la división debe respetar el orden cronológico:
+
+\begin{equation}
+    \mathcal{D}_{\mathrm{entrenamiento}}
+    <
+    \mathcal{D}_{\mathrm{validación}}
+    <
+    \mathcal{D}_{\mathrm{prueba}}.
+\end{equation}
+
+No se debe realizar una división aleatoria convencional, ya que esto permitiría que observaciones futuras aparecieran durante el entrenamiento y produciría una fuga de información.
+
+Los modelos OLS, Ridge, Lasso, Elastic Net, SVR y MLP pueden recibir como entrada una ventana aplanada:
+
+\begin{equation}
+    \mathbf{x}_t
+    =
+    \begin{bmatrix}
+        y_{t-L+1} &
+        \cdots &
+        y_t
+    \end{bmatrix}^{T}.
+\end{equation}
+
+El Transformer debe recibir la ventana conservando explícitamente su dimensión temporal:
+
+\begin{equation}
+    \mathbf{X}_t
+    \in
+    \mathbb{R}^{L\times p}.
+\end{equation}
+
+Para una comparación justa, el horizonte de predicción debe ser igual para todos los modelos. En el caso de salida simple, el objetivo es
+
+\begin{equation}
+    y_{t+1}.
+\end{equation}
+
+Para salida múltiple con horizonte $H$, el objetivo es
+
+\begin{equation}
+    \mathbf{y}_t
+    =
+    \begin{bmatrix}
+        y_{t+1} &
+        y_{t+2} &
+        \cdots &
+        y_{t+H}
+    \end{bmatrix}^{T}.
+\end{equation}
+
+La inclusión de modelos lineales regularizados permite establecer si la complejidad adicional de las arquitecturas neuronales produce una mejora significativa. Si Ridge, Lasso o Elastic Net alcanzan un desempeño semejante al Transformer, el modelo lineal podría ser preferible por su menor costo e interpretabilidad. Por el contrario, una mejora consistente del Transformer indicaría que las dependencias no lineales y de largo plazo son relevantes para el pronóstico de la demanda eléctrica.
