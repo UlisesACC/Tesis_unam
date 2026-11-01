@@ -43,3 +43,5 @@ En la columna de intercambio neto aparecen marcadores de tres guiones en las fil
 El OLS univariante utiliza una sola área y los registros de 2022, ordenados cronológicamente. Después conserva el primer 70\,\% del subconjunto y construye ejemplos con 24 generaciones anteriores. El conteo global de 373\,768 registros no corresponde al tamaño de entrenamiento de este experimento.
 
 Si $N$ es el número de registros del área seleccionada durante 2022, se utilizan $n=\lfloor0.7N\rfloor$ registros para formar las ventanas. Se obtienen $n-24$ ejemplos supervisados y se evalúan $n-48$ predicciones, porque cada ajuste requiere 24 ejemplos previos. Estas expresiones describen el código actual; los conteos efectivos deberán acompañar la ejecución sobre los datos reales.
+
+\input{capitulos/04_metodologia/datos/01_contexto_geografico}

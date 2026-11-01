@@ -22,12 +22,3 @@ R^2=1-\frac{\sum_{i=1}^{m}(g_i-\hat g_i)^2}
 Esta expresión requiere que los valores observados no sean constantes. Un valor de uno corresponde a predicciones exactas; cero indica un error cuadrático igual al de predecir la media del conjunto evaluado, y un valor negativo indica un error mayor.
 
 El programa muestra MAE, RMSE y $R^2$ con dos decimales, junto con el área, el intervalo entre registros, las fechas evaluadas y el número de predicciones. Además, guarda una gráfica de generación observada y estimada frente a fecha y hora. Los resultados numéricos de la ejecución sobre los datos del estudio se incorporarán al capítulo de resultados.
-
-\subsubsection{Error porcentual absoluto medio}
-
-Como medida complementaria se considera el error porcentual absoluto medio (MAPE), cuya expresión aparece en el cuaderno \texttt{ventanas.ipynb}:
-\begin{equation}
-\mathrm{MAPE}=\frac{100}{m}\sum_{i=1}^{m}
-\left|\frac{g_i-\hat g_i}{g_i}\right|.
-\end{equation}
-Esta métrica expresa el error absoluto relativo promedio como porcentaje y requiere valores observados distintos de cero. Los valores pequeños de generación pueden aumentar su sensibilidad. El programa \texttt{root/OLS.py} calcula MAE, RMSE y $R^2$; MAPE se incorpora aquí como evaluación complementaria del cuaderno y deberá calcularse sobre las mismas predicciones cuando se complete una ejecución válida.
