@@ -1,0 +1,53 @@
+\section{Evaluación del modelo OLS}
+\label{sec:resultados-ols}
+
+Se ejecutó el programa \texttt{codigos de docker/root/OLS.py} con el archivo \texttt{datos.csv} del repositorio, conservando el procedimiento descrito en la sección~\ref{subsec:ols-univariante}. La ejecución permitió verificar la selección temporal y detectar una condición que impide iniciar el entrenamiento: la separación entre observaciones no es constante.
+
+\subsection{Conjunto seleccionado}
+
+El área seleccionada fue BCA. El filtro correspondiente a 2022 produjo 8\,573 registros, de los cuales se conservaron los primeros 6\,001, equivalentes al 70\,\% después del redondeo hacia abajo. Este subconjunto abarca desde el 1 de enero de 2022 a las 00:00 hasta el 14 de septiembre de 2022 a las 13:00. Estas fechas delimitan los datos seleccionados y no un periodo de predicciones completadas.
+
+\begin{table}[htbp]
+\centering
+\caption{Intervalos observados entre registros consecutivos del subconjunto utilizado por OLS.}
+\label{tab:intervalos-ols}
+\begin{tabular}{lr}
+\toprule
+Separación temporal & Número de intervalos \\
+\midrule
+Una hora & 5\,973 \\
+Dos horas & 1 \\
+Siete horas & 26 \\
+\midrule
+Total & 6\,000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El intervalo de dos horas se encuentra entre el 13 de marzo de 2022 a las 22:00 y el 14 de marzo a las 00:00. Los intervalos de siete horas aparecen en agosto y septiembre; por ejemplo, entre el 18 de agosto a las 23:00 y el 19 de agosto a las 06:00. Estos saltos describen la separación de las marcas temporales del archivo. Su causa no puede determinarse únicamente a partir de esta comprobación.
+
+\subsection{Estado de las métricas}
+
+La validación temporal detuvo el programa antes de construir los ejemplos supervisados y ajustar el modelo. Por esta razón, la ejecución no produjo predicciones, una gráfica nueva ni valores de desempeño. La tabla~\ref{tab:metricas-ols-estado} registra el estado de las métricas sin sustituir los valores ausentes por ceros.
+
+\begin{table}[htbp]
+\centering
+\caption{Estado de las métricas de OLS en la ejecución con los datos disponibles.}
+\label{tab:metricas-ols-estado}
+\begin{tabular}{lll}
+\toprule
+Métrica & Unidad & Resultado \\
+\midrule
+MAE & MWh & No calculado \\
+RMSE & MWh & No calculado \\
+$R^2$ & Adimensional & No calculado \\
+MAPE & Porcentaje & No calculado \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+MAPE se considera como medida complementaria tomada del cuaderno, mientras que las otras tres métricas están implementadas en el programa. Todas requieren pares de valores observados y predichos, que esta ejecución no llegó a generar.
+
+\subsection{Interpretación}
+
+El resultado de esta etapa corresponde a la verificación de los datos de entrada. La irregularidad temporal impide interpretar todas las ventanas de 24 registros como historias de 24 horas consecutivas. Antes de evaluar la capacidad predictiva será necesario establecer un tratamiento explícito de las discontinuidades y documentar su efecto sobre el conjunto utilizado. Con la ejecución actual no se puede concluir que el modelo tenga un desempeño favorable o desfavorable.
