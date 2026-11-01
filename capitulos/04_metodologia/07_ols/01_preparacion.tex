@@ -1,0 +1,12 @@
+\subsection{Selección y preparación de la serie}
+
+Se cargan los datos de \texttt{datos.csv} y se selecciona la primera área que aparece en el archivo. El periodo de estudio abarca desde el 1 de enero hasta el 31 de diciembre de 2022. Las observaciones se ordenan por fecha y hora y se conserva el primer 70\,\% para desarrollar el experimento. El 30\,\% restante no interviene en el ajuste ni en la evaluación de este programa.
+
+La fecha y hora permiten delimitar el periodo, establecer el orden de las observaciones y comprobar su separación temporal. También identifican las predicciones en la gráfica, pero no se incorporan como variables explicativas. Antes de construir los ejemplos se verifica que la generación contenga valores numéricos finitos, que no existan fechas duplicadas y que el intervalo entre registros sea constante. Los 24 registros de historia representan 24 horas cuando la frecuencia observada es horaria.
+
+Sea $g_t$ la generación eléctrica del registro $t$. La entrada y la respuesta de cada ejemplo se definen como
+\begin{equation}
+\boldsymbol{x}_t=(g_{t-24},g_{t-23},\ldots,g_{t-1})^{\mathsf T},
+\qquad y_t=g_t.
+\end{equation}
+Por tanto, cada entrada contiene 24 valores de generación y tiene asociada una sola respuesta. Los ejemplos se construyen desplazando la ventana un registro a la vez.

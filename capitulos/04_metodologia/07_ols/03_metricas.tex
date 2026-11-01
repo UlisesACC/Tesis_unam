@@ -1,0 +1,24 @@
+\subsection{Métricas de evaluación}
+
+El desempeño se evalúa reuniendo las predicciones de un paso obtenidas en todas las ventanas y comparándolas con sus generaciones observadas. Las métricas se calculan sobre estas predicciones posteriores al ajuste de cada ventana. Sea $m$ el número de predicciones evaluadas, $g_i$ el valor observado, $\hat g_i$ la predicción correspondiente y $\bar g$ la media de los valores observados evaluados.
+
+El error absoluto medio (MAE) cuantifica la magnitud promedio de las diferencias:
+\begin{equation}
+\mathrm{MAE}=\frac{1}{m}\sum_{i=1}^{m}|g_i-\hat g_i|.
+\end{equation}
+Se expresa en MWh y un valor menor indica mayor precisión.
+
+La raíz del error cuadrático medio (RMSE) se calcula mediante
+\begin{equation}
+\mathrm{RMSE}=\sqrt{\frac{1}{m}\sum_{i=1}^{m}(g_i-\hat g_i)^2}.
+\end{equation}
+También se expresa en MWh y otorga mayor peso a las desviaciones grandes.
+
+El coeficiente de determinación compara el error del modelo con la variabilidad de las observaciones:
+\begin{equation}
+R^2=1-\frac{\sum_{i=1}^{m}(g_i-\hat g_i)^2}
+{\sum_{i=1}^{m}(g_i-\bar g)^2}.
+\end{equation}
+Esta expresión requiere que los valores observados no sean constantes. Un valor de uno corresponde a predicciones exactas; cero indica un error cuadrático igual al de predecir la media del conjunto evaluado, y un valor negativo indica un error mayor.
+
+El programa muestra MAE, RMSE y $R^2$ con dos decimales, junto con el área, el intervalo entre registros, las fechas evaluadas y el número de predicciones. Además, guarda una gráfica de generación observada y estimada frente a fecha y hora. Los resultados numéricos de la ejecución sobre los datos del estudio se incorporarán al capítulo de resultados.
