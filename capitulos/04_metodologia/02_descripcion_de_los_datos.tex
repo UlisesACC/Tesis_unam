@@ -1,2 +1,45 @@
-\section{Descripcion de los datos}
-Se realizará una revisión de literatura sobre series de tiempo, redes LSTM, transformadores y regresión neuronal.
+\section{Descripción de los datos}
+\label{sec:descripcion-datos}
+
+El análisis exploratorio se desarrolló en \texttt{ventanas.ipynb}, a partir del archivo \texttt{datos.csv}. La salida de lectura conservada en el cuaderno reporta 373\,768 registros y nueve columnas originales. Este conteo corresponde al conjunto completo, antes de seleccionar el área y el periodo de los experimentos.
+
+Cada registro contiene información eléctrica asociada con un sistema, un área y una marca temporal. La inspección inicial muestra registros del 1 de enero de 2020 a las 00:00 y del 30 de septiembre de 2024 a las 23:00. Estos extremos proceden de las filas mostradas por el cuaderno; no sustituyen una comprobación de continuidad temporal para cada área.
+
+\begin{table}[htbp]
+\centering
+\caption{Variables originales del conjunto de datos.}
+\label{tab:variables-originales}
+\begin{tabular}{p{0.46\textwidth}p{0.44\textwidth}}
+\toprule
+Columna & Descripción \\
+\midrule
+Sistema & Identificador del sistema eléctrico. \\
+Area & Identificador del área. \\
+Generacion (MWh) & Generación eléctrica; variable de respuesta del OLS actual. \\
+Importacion Total (MWh) & Energía importada. \\
+Exportacion Total (MWh) & Energía exportada. \\
+Intercambio neto entre Gerencias (MWh) & Intercambio neto registrado entre gerencias. \\
+Estimacion de Demanda por Balance (MWh) & Estimación de la demanda mediante balance. \\
+Pronostico (MWh) & Pronóstico incluido en la fuente de datos. \\
+Timestamp & Fecha y hora del registro. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Las salidas del agrupamiento identifican nueve áreas: BCA, BCS, CEN, NES, NOR, NTE, OCC, ORI y PEN. Se generó una gráfica de generación para cada una. La primera fila del archivo pertenece a BCA; por ello, la selección del primer valor de \texttt{Area} empleada en los programas corresponde a BCA para el archivo mostrado en el cuaderno.
+
+La marca temporal se interpreta con el formato día/mes/año y hora:minuto. Los registros iniciales exhiben incrementos de una hora. Sin embargo, el número total de filas reúne diferentes áreas y no representa la longitud de una sola serie temporal. Los conteos por área, los valores faltantes y la continuidad de cada serie requieren verificaciones específicas antes del entrenamiento.
+
+\subsection{Agrupamiento y exploración temporal}
+
+Se construyó una tabla agrupada por fecha, hora y área, sumando la generación en cada combinación. La salida conserva 373\,768 filas y tres columnas: fecha y hora, área y generación. El conteo coincide con el de la lectura inicial en la ejecución almacenada.
+
+Como parte de la exploración se calcularon una mediana móvil de 365 observaciones y una media exponencial con parámetro \texttt{span=365}. Aunque algunas etiquetas del cuaderno indican 24 horas, la instrucción de la mediana utiliza una ventana de 365 registros. Estas transformaciones permiten examinar la evolución suavizada de la generación y deben distinguirse de las entradas utilizadas por el OLS univariante, que trabaja con la generación original.
+
+En la columna de intercambio neto aparecen marcadores de tres guiones en las filas mostradas. Por tanto, no debe suponerse que todas las columnas energéticas contienen exclusivamente números. Esta variable no forma parte de las entradas del OLS actual.
+
+\subsection{Relación con el experimento OLS}
+
+El OLS univariante utiliza una sola área y los registros de 2022, ordenados cronológicamente. Después conserva el primer 70\,\% del subconjunto y construye ejemplos con 24 generaciones anteriores. El conteo global de 373\,768 registros no corresponde al tamaño de entrenamiento de este experimento.
+
+Si $N$ es el número de registros del área seleccionada durante 2022, se utilizan $n=\lfloor0.7N\rfloor$ registros para formar las ventanas. Se obtienen $n-24$ ejemplos supervisados y se evalúan $n-48$ predicciones, porque cada ajuste requiere 24 ejemplos previos. Estas expresiones describen el código actual; los conteos efectivos deberán acompañar la ejecución sobre los datos reales.
