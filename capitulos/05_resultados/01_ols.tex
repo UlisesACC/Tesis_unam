@@ -1,15 +1,53 @@
+
 \section{Evaluación del modelo OLS}
 \label{sec:resultados-ols}
 
-Se ejecutó el programa \texttt{codigos de docker/root/OLS.py} con el archivo \texttt{datos.csv} del repositorio, conservando el procedimiento descrito en la sección~\ref{subsec:ols-univariante}. La ejecución permitió verificar la selección temporal y detectar una condición que impide iniciar el entrenamiento: la separación entre observaciones no es constante.
+La evaluación del modelo de regresión lineal por mínimos
+cuadrados ordinarios (OLS) se realizó mediante el programa
+\texttt{OLS.py}, ubicado en el directorio
+\texttt{codigos de docker/root/}, utilizando los registros
+del archivo \texttt{datos.csv}.
 
-\subsection{Conjunto seleccionado}
+El procedimiento se desarrolló conforme a la metodología
+descrita en la sección~\ref{subsec:ols-univariante},
+considerando un enfoque univariante en el que la generación
+eléctrica de una hora se estima a partir de las 24
+observaciones horarias anteriores.
 
-El área seleccionada fue BCA. El filtro correspondiente a 2022 produjo 8\,573 registros, de los cuales se conservaron los primeros 6\,001, equivalentes al 70\,\% después del redondeo hacia abajo. Este subconjunto abarca desde el 1 de enero de 2022 a las 00:00 hasta el 14 de septiembre de 2022 a las 13:00. Estas fechas delimitan los datos seleccionados y no un periodo de predicciones completadas.
+Para la evaluación se implementó un esquema de ventana
+móvil, en el cual el modelo se ajusta utilizando
+24 ejemplos de entrenamiento y posteriormente genera
+una predicción para la siguiente observación disponible.
+Este procedimiento se repite desplazando la ventana
+una posición en cada iteración, lo que permite evaluar
+el comportamiento predictivo del modelo a lo largo
+del conjunto seleccionado.
+
+\subsection{Selección y preparación de los datos}
+
+El área seleccionada fue BCA, correspondiente a la primera
+área identificada en el conjunto de datos. Se consideraron
+los registros comprendidos entre el 1 de enero y el 31 de
+diciembre de 2022, obteniéndose un total de 8\,573
+observaciones.
+
+De acuerdo con el procedimiento establecido, se utilizó
+el primer 70\,\% de los registros ordenados
+cronológicamente, equivalente a 6\,001 observaciones
+después del redondeo hacia abajo. El subconjunto
+resultante comprende desde el 1 de enero de 2022
+a las 00:00 hasta el 14 de septiembre de 2022
+a las 13:00.
+
+Durante la revisión de los datos se identificaron
+discontinuidades en las marcas temporales. La
+tabla~\ref{tab:intervalos-ols} presenta la distribución
+de los intervalos entre registros consecutivos.
 
 \begin{table}[htbp]
 \centering
-\caption{Intervalos observados entre registros consecutivos del subconjunto utilizado por OLS.}
+\caption{Distribución de los intervalos temporales
+entre registros consecutivos del subconjunto seleccionado.}
 \label{tab:intervalos-ols}
 \begin{tabular}{lr}
 \toprule
@@ -24,29 +62,255 @@ Total & 6\,000 \\
 \end{tabular}
 \end{table}
 
-El intervalo de dos horas se encuentra entre el 13 de marzo de 2022 a las 22:00 y el 14 de marzo a las 00:00. Los intervalos de siete horas aparecen en agosto y septiembre; por ejemplo, entre el 18 de agosto a las 23:00 y el 19 de agosto a las 06:00. Estos saltos describen la separación de las marcas temporales del archivo. Su causa no puede determinarse únicamente a partir de esta comprobación.
+Se identificó un intervalo de dos horas entre el
+13 de marzo de 2022 a las 22:00 y el 14 de marzo
+a las 00:00. Asimismo, se encontraron 26 intervalos
+de siete horas, principalmente durante agosto y
+septiembre.
 
-\subsection{Estado de las métricas}
+Estos resultados muestran que, aunque la mayoría
+de los registros mantiene una separación de una hora,
+existen discontinuidades que impiden considerar
+todas las observaciones como una serie horaria
+completamente continua.
 
-La validación temporal detuvo el programa antes de construir los ejemplos supervisados y ajustar el modelo. Por esta razón, la ejecución no produjo predicciones, una gráfica nueva ni valores de desempeño. La tabla~\ref{tab:metricas-ols-estado} registra el estado de las métricas sin sustituir los valores ausentes por ceros.
+Para evitar que estas irregularidades afectaran la
+construcción de las variables predictoras, se
+incorporó una validación de continuidad temporal.
+De esta manera, únicamente se conservaron los
+ejemplos cuya variable objetivo y sus 24 observaciones
+anteriores se encontraban separados por intervalos
+consecutivos de una hora.
+
+Las ventanas que no cumplieron esta condición fueron
+descartadas, sin modificar ni estimar los valores
+originales de generación eléctrica.
+
+\subsection{Entrenamiento y evaluación del modelo}
+
+A partir de las ventanas temporales válidas se
+construyó la matriz de variables predictoras,
+integrada por los 24 valores horarios anteriores
+de generación eléctrica. La variable de respuesta
+correspondió a la generación registrada en la
+hora siguiente.
+
+El entrenamiento se efectuó mediante una ventana
+móvil de 24 ejemplos. En cada iteración se aplicó
+una estandarización a las variables predictoras,
+utilizando exclusivamente los datos de entrenamiento,
+con el propósito de evitar la incorporación de
+información procedente de la observación evaluada.
+
+Posteriormente, se ajustó un modelo de regresión
+lineal mediante mínimos cuadrados ordinarios y se
+obtuvo una predicción para el siguiente ejemplo
+disponible.
+
+Este procedimiento permitió generar predicciones
+sucesivas y compararlas con los valores reales
+de generación eléctrica. Las predicciones fueron
+almacenadas junto con sus respectivas observaciones
+y marcas temporales para calcular las métricas
+de evaluación y realizar el análisis gráfico.
+
+Para cuantificar el desempeño predictivo se
+consideraron tres métricas: el error absoluto
+medio (MAE), la raíz del error cuadrático medio
+(RMSE) y el coeficiente de determinación
+($R^2$).
+
+Las métricas se calcularon considerando todas
+las predicciones obtenidas durante el procedimiento
+de evaluación secuencial, por lo que representan
+el desempeño conjunto de los ajustes realizados
+mediante la ventana móvil.
+
+\subsection{Resultados de las métricas}
+
+La evaluación cuantitativa se realizó mediante
+la comparación entre los valores reales de
+generación eléctrica y las estimaciones producidas
+por el modelo OLS.
+
+La tabla~\ref{tab:metricas-ols} presenta los
+resultados obtenidos durante la ejecución
+del programa.
 
 \begin{table}[htbp]
 \centering
-\caption{Estado de las métricas de OLS en la ejecución con los datos disponibles.}
-\label{tab:metricas-ols-estado}
-\begin{tabular}{lll}
+\caption{Métricas de evaluación del modelo OLS.}
+\label{tab:metricas-ols}
+\begin{tabular}{lcc}
 \toprule
-Métrica & Unidad & Resultado \\
+Métrica & Resultado & Unidad \\
 \midrule
-MAE & MWh & No calculado \\
-RMSE & MWh & No calculado \\
-$R^2$ & Adimensional & No calculado \\
+MAE & 185.4584 & MWh \\
+RMSE & 378.5345 & MWh \\
+$R^2$ & 0.1911 & Adimensional \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Las tres métricas requieren pares de valores observados y predichos, que esta ejecución no llegó a generar.
+El error absoluto medio obtenido fue de
+185.4584 MWh, lo que indica que las predicciones
+del modelo presentan una diferencia absoluta
+promedio de aproximadamente 185.46 MWh respecto
+a los valores reales de generación eléctrica.
 
-\subsection{Interpretación}
+Por otra parte, la raíz del error cuadrático
+medio alcanzó un valor de 378.5345 MWh,
+superior al MAE. Esta diferencia indica que
+los errores de mayor magnitud tienen una
+influencia considerable sobre el desempeño
+global del modelo, debido a que el RMSE
+penaliza en mayor medida las desviaciones
+elevadas entre los valores observados
+y los estimados.
 
-El resultado de esta etapa corresponde a la verificación de los datos de entrada. La irregularidad temporal impide interpretar todas las ventanas de 24 registros como historias de 24 horas consecutivas. Antes de evaluar la capacidad predictiva será necesario establecer un tratamiento explícito de las discontinuidades y documentar su efecto sobre el conjunto utilizado. Con la ejecución actual no se puede concluir que el modelo tenga un desempeño favorable o desfavorable.
+En particular, el RMSE resultó aproximadamente
+2.04 veces mayor que el MAE, lo cual sugiere
+que las magnitudes de los errores no se
+distribuyen de manera uniforme. Sin embargo,
+la identificación de las observaciones
+responsables de las mayores desviaciones
+requiere un análisis individual de los errores.
+
+En cuanto al coeficiente de determinación,
+se obtuvo un valor de $R^2=0.1911$.
+Este resultado indica que el modelo presenta
+una capacidad explicativa limitada respecto
+a la variabilidad de la generación eléctrica
+en el conjunto evaluado.
+
+De acuerdo con la definición de esta métrica,
+el modelo consiguió una reducción del
+19.11\,\% en la suma de errores cuadráticos
+respecto a una predicción constante basada
+en la media de los valores reales evaluados.
+
+Aunque el coeficiente es positivo, su magnitud
+indica que las predicciones todavía presentan
+diferencias importantes respecto al comportamiento
+observado de la generación eléctrica.
+
+\subsection{Análisis gráfico de las predicciones}
+
+Además de las métricas cuantitativas, se
+realizó una evaluación gráfica mediante
+la comparación entre los valores reales
+y predichos de generación eléctrica.
+
+La figura~\ref{fig:ols-predicciones} presenta
+la evolución de ambas series durante el
+periodo evaluado.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]
+{figuras/05_resultados/ols_calendario_historico.png}
+\caption{Comparación entre la generación eléctrica
+real y la estimada mediante el modelo OLS durante
+el periodo de evaluación.}
+\label{fig:ols-predicciones}
+\end{figure}
+
+Esta representación permite examinar el
+comportamiento general de las predicciones
+respecto a los valores observados e identificar
+visualmente los intervalos temporales en los
+que se presentan diferencias entre ambas series.
+
+Debido a la cantidad de observaciones evaluadas,
+se generó adicionalmente una representación
+ampliada correspondiente a un intervalo de
+tres días, con el propósito de facilitar
+el análisis del comportamiento horario
+de las predicciones.
+
+La figura~\ref{fig:ols-predicciones-3dias}
+presenta esta comparación en una escala
+temporal más reducida.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]
+{figuras/05_resultados/image.png}
+\caption{Comparación entre la generación eléctrica
+real y predicha mediante OLS durante un intervalo
+de tres días.}
+\label{fig:ols-predicciones-3dias}
+\end{figure}
+
+La representación ampliada facilita la
+identificación visual de las diferencias
+entre los valores reales y estimados,
+particularmente durante los periodos
+de incremento o disminución de la generación.
+
+Asimismo, permite examinar si las predicciones
+reproducen las variaciones de corto plazo
+observadas en la serie y reconocer posibles
+desviaciones durante los cambios de generación.
+
+Es importante señalar que las métricas
+presentadas en la tabla~\ref{tab:metricas-ols}
+corresponden a la totalidad de las predicciones
+evaluadas y no únicamente al intervalo
+de tres días representado en la figura.
+
+\subsection{Análisis de resultados}
+
+Los resultados obtenidos muestran que el modelo OLS
+presenta limitaciones en su capacidad para estimar
+la generación eléctrica bajo la configuración de
+entrenamiento utilizada. La
+tabla~\ref{tab:analisis-ols} presenta las métricas
+obtenidas y su correspondiente interpretación.
+
+\begin{table}[htbp]
+\centering
+\caption{Análisis de las métricas de evaluación del modelo OLS.}
+\label{tab:analisis-ols}
+\small
+\begin{tabular}{lcp{8cm}}
+\toprule
+Métrica & Resultado & Interpretación \\
+\midrule
+
+MAE &
+185.4584 MWh &
+Las predicciones presentan una diferencia absoluta
+promedio de aproximadamente 185.46 MWh respecto
+a los valores reales de generación eléctrica. \\
+
+\midrule
+
+RMSE &
+378.5345 MWh &
+El valor superior al MAE indica una mayor influencia
+de los errores de magnitud elevada sobre el
+desempeño global del modelo. \\
+
+\midrule
+
+$R^2$ &
+0.1911 &
+El modelo presenta una capacidad explicativa limitada,
+con una reducción del 19.11\,\% en la suma de errores
+cuadráticos respecto a una predicción constante
+basada en la media de los valores reales evaluados. \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+A partir de los resultados presentados en la
+tabla~\ref{tab:analisis-ols}, se observa que el
+modelo presenta diferencias entre los valores
+reales y predichos. En particular, el RMSE es
+aproximadamente 2.04 veces mayor que el MAE,
+lo que sugiere que algunas predicciones
+presentan desviaciones considerablemente
+mayores que otras.
+
