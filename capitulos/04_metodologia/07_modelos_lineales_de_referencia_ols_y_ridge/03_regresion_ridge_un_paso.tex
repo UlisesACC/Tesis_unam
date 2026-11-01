@@ -1,0 +1,15 @@
+\subsection{Regresión Ridge: un paso}
+
+En \texttt{ridge.py} se añadió el rezago de una observación de la generación, \texttt{Gen\_lag1}, a los cinco predictores de calendario. Se eliminaron las filas con valores faltantes mediante \texttt{dropna} y se tomó el primer 70\,\% del conjunto resultante. Cada ventana contiene 13 registros: 12 para ajustar y uno para evaluar. También se reajusta el modelo en cada desplazamiento.
+
+Se utilizó \texttt{RidgeCV} con los candidatos $\alpha\in\{0.001,0.01,0.1,1,10\}$ y tres particiones de validación interna. La penalización corresponde a
+\begin{equation}
+(\hat{\beta}_0,\hat{\boldsymbol{\beta}})
+=\arg\min_{\beta_0,\boldsymbol{\beta}}
+\left\{
+\sum_{i=1}^{12}
+\left(y_i-\beta_0-\boldsymbol{x}_i^{\mathsf T}\boldsymbol{\beta}\right)^2
++\alpha\|\boldsymbol{\beta}\|_2^2
+\right\}.
+\end{equation}
+Este programa no aplica estandarización a las entradas. Las tres particiones internas tampoco constituyen una validación de origen móvil: no se especifica un particionador temporal. La salida comprende MAE, RMSE, $R^2$ y \texttt{prediccion\_vs\_real\_ridge.png}. La comparación con OLS involucra simultáneamente cambios de predictores, tamaño de entrenamiento y escalamiento; por ello, no permite aislar el efecto de la penalización.

@@ -1,0 +1,8 @@
+\subsection{Versiones de salida múltiple: diez pasos}
+\label{subsec:lineales-multi}
+
+En \texttt{OLS\_10.py} y \texttt{ridge\_10.py} se construyeron ventanas de 22 registros, con una historia nominal de 12 y un horizonte de diez. Cada respuesta de entrenamiento es un vector de diez valores consecutivos de generación posteriores a la fila de entrada. El vector pronosticado se obtiene usando los predictores de la última fila de la historia. OLS utiliza los cinco predictores de calendario y estandarización; Ridge añade el rezago y conserva la selección de $\alpha$ con tres particiones, sin estandarizar.
+
+La construcción de las respuestas recorre las 12 filas de historia, pero extrae sus valores de la ventana completa de 22 registros. En particular, la respuesta asociada a la última fila histórica contiene exactamente los diez valores que después se usan para evaluar esa ventana. Además, esa misma fila de entrada participa en el ajuste y en la predicción. Existe, por tanto, fuga de información de las respuestas de evaluación hacia el entrenamiento. Las salidas conservadas describen este procedimiento exploratorio y no una prueba independiente de pronóstico a diez pasos.
+
+Los programas calculan MAE y $R^2$ promediados entre las diez salidas. El valor denominado RMSE es la raíz del error cuadrático medio agregado entre observaciones y salidas; no es el promedio de diez RMSE calculados por separado. Las gráficas \texttt{prediccion\_ols\_multioutput.png} y \texttt{prediccion\_ridge\_multioutput.png} muestran únicamente el primer paso.

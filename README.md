@@ -1,33 +1,23 @@
-# Proyecto de tesis en LaTeX
+# Tesis UNAM
 
-El archivo principal es `main.tex`. Los datos de portada se editan en `configuracion/datos.tex` y el contenido se distribuye entre `preliminares`, `capitulos` y `apendices`.
-
-## Compilación local
-
-```bash
-latexmk -pdf -interaction=nonstopmode main.tex
-```
-
-Si no se dispone de `latexmk`:
-
-```bash
-pdflatex main.tex
-biber main
-pdflatex main.tex
-pdflatex main.tex
-```
-
-## Overleaf
-
-Sube el archivo ZIP como proyecto nuevo. Overleaf detectará `main.tex` automáticamente. Conserva los nombres de carpetas y evita espacios en los nombres de archivos.
+Compilar `main.tex` desde la raíz con `latexmk -pdf main.tex` y Biber para la bibliografía.
 
 ## Organización
 
-- `configuracion`: paquetes, estilos y datos de portada.
-- `preliminares`: portada, resumen, abstract y abreviaturas.
-- `capitulos`: contenido principal de la tesis.
-- `bibliografia`: referencias en formato BibLaTeX.
-- `figuras`: imágenes usadas en el documento.
-- `tablas`: tablas externas, si se requieren.
-- `codigo`: programas incorporados mediante `listings`.
-- `apendices`: material complementario.
+- `configuracion/`: paquetes y portada.
+- `preliminares/`: portada, resúmenes y abreviaturas.
+- `capitulos/01_introduccion/` a `capitulos/06_conclusiones/`: cada `index.tex` incorpora secciones mediante `\input`.
+- `capitulos/02_marco_teorico/fundamentos/`: series de tiempo y modelos.
+- `capitulos/03_estado_del_arte/articulos/`: reseñas de artículos.
+- `capitulos/04_metodologia/`: procedimiento y archivos por experimento.
+- `capitulos/05_resultados/`: evidencia, análisis y evaluación pendiente.
+- `figuras/05_resultados/`: copias de las figuras usadas por el documento.
+- `apendices/`: una carpeta e índice por apéndice.
+- `bibliografia/`: referencias.
+- `codigos de docker/`: programas, datos y salidas originales en sus rutas originales.
+
+Todas las rutas de los inputs se resuelven desde la raíz. Para añadir una sección, crear su archivo y registrarlo en el índice del capítulo.
+
+## OLS actual
+
+El modelo recibe 24 generaciones pasadas y predice la siguiente, con 24 ejemplos por ajuste móvil. Las fechas no son predictores. Su evaluación sobre datos reales está pendiente; la figura OLS con calendario se conserva como histórica.
