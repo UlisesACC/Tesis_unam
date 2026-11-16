@@ -39,10 +39,24 @@ Como parte de la exploración se calcularon una mediana móvil de 365 observacio
 
 En la columna de intercambio neto aparecen marcadores de tres guiones en las filas mostradas. Por tanto, no debe suponerse que todas las columnas energéticas contienen exclusivamente números. Esta variable no forma parte de las entradas del OLS actual.
 
-\subsection{Relación con el experimento OLS}
+\subsection{División de los análisis e intervalos temporales}
 
-El OLS univariante utiliza una sola área y los registros de 2022, ordenados cronológicamente. Después conserva el primer 70\,\% del subconjunto y construye ejemplos con 24 generaciones anteriores. El conteo global de 373\,768 registros no corresponde al tamaño de entrenamiento de este experimento.
+La exploración abarcó las nueve áreas del conjunto original. Los experimentos de pronóstico se concentraron en Baja California (BCA), con registros desde el 1 de enero de 2022 inclusive hasta el 1 de enero de 2023 exclusivo. La variable de respuesta fue la generación eléctrica en MWh. En ambos escenarios la unidad de observación fue una hora y la historia de entrada abarcó 24 horas consecutivas. Las ventanas que cruzaron un salto en el registro horario se descartaron. Los escenarios difieren en los datos de entrada, los orígenes de evaluación y la frecuencia de ajuste.
 
-Si $N$ es el número de registros del área seleccionada durante 2022, se utilizan $n=\lfloor0.7N\rfloor$ registros para formar las ventanas. Se obtienen $n-24$ ejemplos supervisados y se evalúan $n-48$ predicciones, porque cada ajuste requiere 24 ejemplos previos. Estas expresiones describen el código actual; los conteos efectivos deberán acompañar la ejecución sobre los datos reales.
+\subsubsection{Versión media: pronóstico a una hora}
+
+Se compararon OLS, Ridge, Lasso y Elastic Net sobre los primeros 6\,001 registros ordenados de BCA en 2022, correspondientes al 70\,\% inicial de la serie del área. El 30\,\% final quedó fuera de esta ejecución. Cada entrada contiene 24 generaciones observadas y la respuesta corresponde a la hora siguiente. Las fechas se usaron para ordenar los datos, verificar la continuidad e identificar cada predicción.
+
+Para cada origen de evaluación se volvió a ajustar el modelo con los 24 ejemplos válidos más recientes cuya respuesta ya se conocía. La comparación utilizó los últimos 168 orígenes elegibles del subconjunto, con una predicción de una hora por origen y por modelo. Cuando hay discontinuidades, esos orígenes pueden distribuirse en un periodo mayor de siete días. El acercamiento gráfico documentado muestra aproximadamente del 12 al 15 de agosto de 2022, mientras que las métricas reúnen los 168 orígenes. El programa se identifica como \texttt{comparar\_modelos.py} en la sección~\ref{sec:comparacion-lineales-una-hora}.
+
+El script individual \texttt{OLS.py}\footnote{Código fuente disponible en el \href{https://github.com/UlisesACC/Tesis_unam/tree/main/codigos\%20de\%20docker/root}{repositorio de la tesis en GitHub}.} aplica el mismo recorte cronológico y el mismo esquema de ajuste móvil. Este script recorre todos los orígenes válidos disponibles después de reunir los primeros 24 ejemplos de entrenamiento. El límite de 168 orígenes corresponde a la comparación entre modelos.
+
+\subsubsection{Versión difícil: pronóstico recursivo a 72 horas}
+
+Se compararon OLS, Ridge, Lasso, Elastic Net, Random Forest y SVR. La entrada conserva 24 horas de historia y agrega cinco variables de calendario a la generación: hora, día del año, año, mes y día de la semana. Así, cada ejemplo contiene \(24\times6=144\) componentes. A partir del primer tramo de 48 horas consecutivas se construyeron 24 ejemplos de entrenamiento. Cada modelo se ajustó una sola vez y sus parámetros se mantuvieron fijos durante la evaluación.
+
+Se evaluaron las primeras 20 ventanas válidas de 72 horas. En cada origen se inició con las 24 generaciones observadas anteriores y se incorporó cada predicción a la historia para calcular la siguiente. Los orígenes avanzan por registro, por lo que las ventanas pueden solaparse. Se obtuvieron \(20\times72=1\,440\) predicciones por modelo, contadas por origen y paso del horizonte. La gráfica de la primera ventana corresponde al 3, 4 y 5 de enero de 2022. Las métricas abarcan las 20 ventanas. El programa se identifica como \texttt{comparar\_modelos\_dificil\_solo\_datos.py} en la sección~\ref{sec:comparacion-recursiva}.
+
+En ambos escenarios se comparó la generación observada con la predicha mediante MAE, RMSE y \(R^2\), y se revisaron gráficamente las trayectorias. Las diferencias de desempeño deben interpretarse considerando que también cambian las entradas y el procedimiento de entrenamiento.
 
 \input{capitulos/04_metodologia/datos/01_contexto_geografico}
