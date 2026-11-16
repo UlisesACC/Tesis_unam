@@ -1,3 +1,5 @@
 \section{Planteamiento del problema}
 
-Aunque los transformadores han obtenido resultados relevantes en distintas tareas de aprendizaje profundo, su aplicación a la regresión de series de tiempo continúa siendo un área activa de investigación. Por ello, resulta necesario analizar su eficacia frente a modelos recurrentes tradicionales mediante experimentos comparables y métricas cuantitativas.
+Aunque los transformadores han obtenido resultados relevantes en distintas tareas de aprendizaje profundo, su aplicación a la regresión de series de tiempo continúa siendo un área activa de investigación. Esta tesis estudia si las redes LSTM y los transformadores mejoran el pronóstico de la generación eléctrica horaria frente a modelos de referencia cuando se evalúan en condiciones comparables.
+
+El caso de estudio corresponde al área de Baja California (BCA) durante 2022, con registros del Centro Nacional de Control de Energía (CENACE) para el Sistema Eléctrico Nacional (SEN) de México. Se estudian dos horizontes: la hora siguiente y las siguientes 72 horas. Para este último horizonte se compara el pronóstico recursivo, que usa sus propias predicciones en pasos posteriores, con la salida múltiple directa.

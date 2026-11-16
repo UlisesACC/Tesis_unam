@@ -1,3 +1,5 @@
 \section{Selección y preprocesamiento de datos}
 
-El preprocesamiento contemplará normalización, detección o eliminación justificada de valores atípicos y transformaciones apropiadas para cada conjunto de datos. La partición respetará el orden temporal para evitar fuga de información.
+El protocolo comparativo se aplicará a los registros del área BCA de 2022. Se ordenarán cronológicamente, se verificarán las marcas temporales duplicadas, los valores finitos y la separación de una hora entre observaciones consecutivas. Se excluirán las ventanas que atraviesen discontinuidades.
+
+La ventana de entrada de referencia abarcará 24 horas. La configuración univariante utilizará los 24 rezagos de generación. La configuración multivariante añadirá hora, día del año, año, mes y día de la semana, con seis variables por observación. Las particiones respetarán el orden temporal. Para los modelos que requieran estandarización se ajustará el escalador con los datos de entrenamiento de cada partición y se aplicará esa misma transformación a los datos de evaluación.

@@ -1,3 +1,10 @@
 \section{Configuración de los experimentos}
 
-Los experimentos variarán hiperparámetros relevantes y mantendrán condiciones comparables entre arquitecturas. El entrenamiento y la evaluación se documentarán para favorecer la reproducibilidad.
+Se compararán redes LSTM y transformadores con modelos de referencia lineales (OLS, Ridge, Lasso y Elastic Net) y no lineales (SVR con núcleo RBF, Random Forest y perceptrón multicapa). Dentro de cada escenario se utilizarán las mismas variables de entrada, ejemplos de entrenamiento e instantes de evaluación. El ajuste de hiperparámetros se realizará mediante validación temporal.
+
+\begin{description}
+  \item[Horizonte de una hora.] Se emplearán 24 horas de historia para estimar la generación de la hora siguiente.
+  \item[Horizonte de 72 horas.] En la estrategia recursiva se incorporará cada pronóstico a la ventana de entrada para estimar el siguiente paso. En la estrategia directa, el modelo producirá las 72 estimaciones en una sola salida.
+\end{description}
+
+Se reportarán métricas globales y se analizará el error por paso del horizonte de 72 horas. El análisis considerará el solapamiento entre ventanas de evaluación y el costo computacional de los modelos.

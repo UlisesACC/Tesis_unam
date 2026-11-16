@@ -1,4 +1,6 @@
-# Tesis UNAM
+# Predicción de series de tiempo usando redes neuronales: comparación de LSTM y transformadores para modelos de regresión
+
+Tesis de la Facultad de Ciencias de la UNAM. El estudio compara redes LSTM y transformadores con modelos de referencia para pronosticar la generación eléctrica horaria del área de Baja California (BCA) en 2022, a partir de registros del CENACE. Se evalúan horizontes de una y 72 horas.
 
 Compilar `main.tex` desde la raíz con `latexmk -pdf main.tex` y Biber para la bibliografía.
 

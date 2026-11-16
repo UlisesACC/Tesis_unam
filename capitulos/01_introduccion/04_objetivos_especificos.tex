@@ -1,10 +1,11 @@
 \section{Objetivos específicos}
 
 \begin{enumerate}
-  \item Investigar y analizar las arquitecturas recurrentes LSTM y las arquitecturas basadas en transformadores para la predicción de series de tiempo.
-  \item Implementar y adaptar transformadores para tareas de regresión en series de tiempo.
-  \item Diseñar un esquema de preprocesamiento y postprocesamiento de datos que mejore la calidad de las predicciones.
-  \item Comparar el desempeño de los modelos LSTM y transformadores mediante RMSE, MAE, MAPE y $R^2$.
-  \item Evaluar la capacidad de predicción en escenarios de salida simple y salida múltiple.
-  \item Analizar los resultados obtenidos y proponer mejoras en los modelos.
+  \item Investigar y analizar las arquitecturas LSTM y los componentes de los transformadores empleados en el pronóstico de series de tiempo, entre ellos la atención de producto punto escalado, la atención multicabeza y la codificación posicional.
+  \item Adaptar e implementar transformadores para regresión con ventanas de entrada $X\in\mathbb{R}^{L\times p}$, codificación temporal y una capa de salida lineal para pronosticar uno o varios pasos.
+  \item Diseñar el preprocesamiento y el postprocesamiento de los datos con verificaciones de continuidad, construcción de ventanas, escalado ajustado con datos de entrenamiento y particiones cronológicas que eviten la fuga de información.
+  \item Establecer modelos de referencia OLS, Ridge, Lasso, Elastic Net, SVR, Random Forest y perceptrón multicapa bajo condiciones comparables de entrada, entrenamiento y evaluación.
+  \item Comparar el desempeño de las redes LSTM y los transformadores con los modelos de referencia mediante RMSE, MAE, MAPE y $R^2$.
+  \item Evaluar la predicción a una hora y comparar las estrategias recursiva y de salida múltiple directa para un horizonte de 72 horas.
+  \item Analizar el error por paso del horizonte y el costo computacional de los modelos, e identificar oportunidades de mejora.
 \end{enumerate}
