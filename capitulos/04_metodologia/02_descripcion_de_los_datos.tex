@@ -43,6 +43,20 @@ En la columna de intercambio neto aparecen marcadores de tres guiones en las fil
 
 La exploración abarcó las nueve áreas del conjunto original. Los experimentos de pronóstico se concentraron en Baja California (BCA), con registros desde el 1 de enero de 2022 inclusive hasta el 1 de enero de 2023 exclusivo. La variable de respuesta fue la generación eléctrica en MWh. En ambos escenarios la unidad de observación fue una hora y la historia de entrada abarcó 24 horas consecutivas. Las ventanas que cruzaron un salto en el registro horario se descartaron. Los escenarios difieren en los datos de entrada, los orígenes de evaluación y la frecuencia de ajuste.
 
+\subsubsection{Implementaciones individuales de Ridge, SVM y Transformer}
+
+Las primeras implementaciones aplicaron ventanas móviles al tramo inicial de los registros seleccionados de BCA en 2022. Los tres scripts predicen la generación del registro siguiente y reportan MAE, RMSE y \(R^2\). Cada uno construye sus entradas y ajusta el modelo de forma distinta.
+
+\begin{itemize}
+  \item \textbf{Ridge.} El script \texttt{ridge.py} combina cinco variables de calendario con un rezago de generación. Cada ventana contiene 12 filas de entrenamiento y una de evaluación. La intensidad de la penalización se elige entre cinco valores mediante validación cruzada de tres particiones dentro del ajuste.
+  \item \textbf{SVM para regresión.} El script \texttt{SVM.py} usa cinco variables de calendario y ventanas de 12 filas de entrenamiento y una de evaluación. Emplea SVR con núcleo radial y estandariza las entradas y la respuesta con los datos del ajuste correspondiente.
+  \item \textbf{Transformer.} El script \texttt{Transformer.py} usa las cinco variables de calendario y ajusta la red durante 50 épocas con 24 filas de entrenamiento por ventana. Cada ejemplo se representa como una secuencia de longitud uno. En esta implementación, la atención opera sobre una única posición por ejemplo.
+\end{itemize}
+
+Los tamaños de entrenamiento y las variables de entrada varían entre los scripts individuales. Para comparar las tres familias bajo un mismo protocolo se incorporó \texttt{comparar\_ridge\_transformer\_svm.py}. El programa utiliza los primeros registros del 70\,\% cronológico de BCA en 2022, construye entradas de 24 generaciones horarias consecutivas y verifica la continuidad hasta la hora objetivo. En cada origen ajusta los tres modelos con los mismos 24 ejemplos válidos previos y estandariza con los datos de ese ajuste. Por defecto evalúa hasta 168 orígenes y genera archivos de predicciones y métricas y una gráfica de dos días.
+
+En este comparador, Ridge utiliza una penalización fija con \(\alpha=1\) y SVR conserva el núcleo radial. El Transformer recibe los 24 rezagos como una secuencia, con una coordenada de posición en cada paso. Así puede aplicar atención entre las observaciones de la historia. El comparador constituye una configuración adicional cuya ejecución y resultados quedan pendientes.
+
 \subsubsection{Versión media: pronóstico a una hora}
 
 Se compararon OLS, Ridge, Lasso y Elastic Net sobre los primeros 6\,001 registros ordenados de BCA en 2022, correspondientes al 70\,\% inicial de la serie del área. El 30\,\% final quedó fuera de esta ejecución. Cada entrada contiene 24 generaciones observadas y la respuesta corresponde a la hora siguiente. Las fechas se usaron para ordenar los datos, verificar la continuidad e identificar cada predicción.
