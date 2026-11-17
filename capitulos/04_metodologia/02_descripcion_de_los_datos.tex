@@ -55,7 +55,7 @@ Las primeras implementaciones aplicaron ventanas móviles al tramo inicial de lo
 
 Los tamaños de entrenamiento y las variables de entrada varían entre los scripts individuales. Para comparar las tres familias bajo un mismo protocolo se incorporó \texttt{comparar\_ridge\_transformer\_svm.py}. El programa utiliza los primeros registros del 70\,\% cronológico de BCA en 2022, construye entradas de 24 generaciones horarias consecutivas y verifica la continuidad hasta la hora objetivo. En cada origen ajusta los tres modelos con los mismos 24 ejemplos válidos previos y estandariza con los datos de ese ajuste. Por defecto evalúa hasta 168 orígenes y genera archivos de predicciones y métricas y una gráfica de dos días.
 
-En este comparador, Ridge utiliza una penalización fija con \(\alpha=1\) y SVR conserva el núcleo radial. El Transformer recibe los 24 rezagos como una secuencia, con una coordenada de posición en cada paso. Así puede aplicar atención entre las observaciones de la historia. El comparador constituye una configuración adicional cuya ejecución y resultados quedan pendientes.
+En este comparador, Ridge utiliza una penalización fija con \(\alpha=1\) y SVR conserva el núcleo radial. El Transformer recibe los 24 rezagos como una secuencia, con una coordenada de posición en cada paso. Así puede aplicar atención entre las observaciones de la historia. La ejecución del comparador produjo 168 predicciones por modelo. Sus resultados se presentan en la sección~\ref{sec:comparacion-ridge-svr-transformer}.
 
 \subsubsection{Versión media: pronóstico a una hora}
 

@@ -145,6 +145,45 @@ Las penalizaciones de Ridge y Elastic Net restringen el tamaño de los coeficien
 
 Las conclusiones se limitan al área BCA, a los 168 orígenes seleccionados y a los hiperparámetros establecidos. Para determinar si el orden de desempeño se mantiene sería necesario ampliar la evaluación a otros periodos y tamaños de entrenamiento. Asimismo, la interpretación operativa de los errores en MWh requiere considerar la escala de generación y las tolerancias de la aplicación.
 
+\section{Comparación de Ridge, SVR y Transformer a una hora}
+\label{sec:comparacion-ridge-svr-transformer}
+
+Se compararon Ridge, la regresión de vectores de soporte (SVR) con núcleo radial y un Transformer para pronosticar la generación eléctrica de Baja California (BCA) a una hora. Los tres modelos utilizaron la misma historia de 24 generaciones horarias consecutivas y, en cada origen, se ajustaron con los 24 ejemplos válidos anteriores. La estandarización de las entradas y de la respuesta se calculó con esos ejemplos de entrenamiento y las predicciones se expresaron en MWh.
+
+\subsection{Periodo de evaluación y métricas}
+
+Las fechas objetivo de las 168 predicciones por modelo abarcaron del 12 de agosto de 2022 a las 18:00 al 5 de septiembre de 2022 a las 23:00. Estas fechas marcan el inicio y el fin del conjunto evaluado. Las ventanas que atravesaron discontinuidades se excluyeron, por lo que los 168 casos no corresponden a horas consecutivas. La tabla~\ref{tab:ridge-svr-transformer} presenta las métricas calculadas sobre las mismas fechas para los tres modelos.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Desempeño de Ridge, SVR y Transformer en el pronóstico de generación a una hora.}
+    \label{tab:ridge-svr-transformer}
+    \begin{tabular}{lrrrr}
+        \toprule
+        Modelo & Predicciones & MAE (MWh) & RMSE (MWh) & $R^2$ \\
+        \midrule
+        Ridge       & 168 & 93.0581 & 118.6614 & 0.8079 \\
+        SVR         & 168 & \textbf{73.4727} & \textbf{96.3306} & \textbf{0.8734} \\
+        Transformer & 168 & 95.4729 & 121.4791 & 0.7987 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+SVR obtuvo el menor MAE y el menor RMSE, así como el mayor $R^2$. Respecto de Ridge, redujo el error absoluto medio en 19.59 MWh (21.05\,\%) y el RMSE en 22.33 MWh (18.82\,\%). Ridge y Transformer presentaron resultados cercanos: Ridge obtuvo un MAE 2.41 MWh menor y un RMSE 2.82 MWh menor. Bajo la configuración evaluada, la atención sobre los 24 rezagos no se tradujo en una mejora de las métricas globales respecto de Ridge.
+
+\subsection{Análisis de las trayectorias predichas}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figuras/05_resultados/comparacion_ridge_transformer_svr.png}
+    \caption{Generación observada y predicciones de Ridge, SVR y Transformer en el tramo inicial de 48 horas del periodo evaluado.}
+    \label{fig:ridge-svr-transformer}
+\end{figure}
+
+La figura~\ref{fig:ridge-svr-transformer} muestra el tramo comprendido entre la tarde del 12 y la tarde del 14 de agosto de 2022. Durante el mediodía del 13 de agosto, Ridge predice un pico superior a 2\,600 MWh, mientras que los valores observados en ese tramo se mantienen por debajo de 2\,500 MWh. SVR sigue más de cerca el ascenso observado durante esas horas. En la madrugada del 14 de agosto, la generación observada desciende y el Transformer mantiene valores por encima de la serie real durante parte del descenso. Hacia el final del tramo, los tres modelos subestiman el repunte de la generación.
+
+La figura permite examinar desviaciones en horas concretas. La ventaja de SVR en la tabla corresponde al conjunto de 168 fechas objetivo y se limita al horizonte, los datos y la configuración de ajuste de este experimento.
+
 \section{Comparación de pronósticos recursivos a 72 horas}
 \label{sec:comparacion-recursiva}
 
