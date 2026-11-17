@@ -150,6 +150,14 @@ Las conclusiones se limitan al área BCA, a los 168 orígenes seleccionados y a 
 
 Se compararon Ridge, la regresión de vectores de soporte (SVR) con núcleo radial y un Transformer para pronosticar la generación eléctrica de Baja California (BCA) a una hora. Los tres modelos utilizaron la misma historia de 24 generaciones horarias consecutivas y, en cada origen, se ajustaron con los 24 ejemplos válidos anteriores. La estandarización de las entradas y de la respuesta se calculó con esos ejemplos de entrenamiento y las predicciones se expresaron en MWh.
 
+\subsection{Configuración del Transformer}
+
+El Transformer recibió una secuencia de 24 pasos, ordenados desde la observación más antigua hasta la más reciente. Cada paso incluyó dos valores: la generación estandarizada del rezago y su posición relativa dentro de la ventana. Esta última se representó mediante 24 valores equidistantes entre \(-1\) y \(1\), lo que permitió distinguir las horas dentro de la secuencia. Una capa densa proyectó cada par de valores a una representación de dimensión 16.
+
+Se utilizó un solo bloque de autoatención con dos cabezas y dimensión de clave 16 por cabeza. La autoatención relacionó entre sí las 24 horas observadas para construir una representación de cada posición a partir de toda la ventana. A su salida se aplicó \textit{dropout} con tasa de 0.1, seguido de una conexión residual y normalización de capa. Después, una red densa de 64 unidades con activación ReLU y una proyección lineal de 16 unidades transformó la representación de cada posición. Una segunda conexión residual y normalización completó el bloque. Las representaciones de los 24 pasos se promediaron y una capa lineal de una unidad produjo el pronóstico de la hora siguiente.
+
+En cada origen de evaluación se inicializó una red nueva con semilla 42 y se entrenó con los 24 ejemplos válidos previos. El comparador usó Adam y el error cuadrático medio como función de pérdida sobre la respuesta estandarizada. Los ejemplos se procesaron en orden, con lotes de ocho y 50 épocas como valor predeterminado del script. Los parámetros de estandarización de los rezagos y de la respuesta se estimaron exclusivamente con los ejemplos de entrenamiento de cada origen. La predicción final se transformó a la escala original de generación para calcular las métricas en MWh.
+
 \subsection{Periodo de evaluación y métricas}
 
 Las fechas objetivo de las 168 predicciones por modelo abarcaron del 12 de agosto de 2022 a las 18:00 al 5 de septiembre de 2022 a las 23:00. Estas fechas marcan el inicio y el fin del conjunto evaluado. Las ventanas que atravesaron discontinuidades se excluyeron, por lo que los 168 casos no corresponden a horas consecutivas. La tabla~\ref{tab:ridge-svr-transformer} presenta las métricas calculadas sobre las mismas fechas para los tres modelos.
